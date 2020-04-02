@@ -19,7 +19,7 @@ run() {
 
 if [ x$ARCH == xarm64 ]; then
         qemu_arch=aarch64
-elif [ x$arch == xarm ]; then
+elif [ x$ARCH == xarm ]; then
         qemu_arch=arm
 else
         echo "wrong arch parameter, it should be arm or arm64"

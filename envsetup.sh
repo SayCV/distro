@@ -29,7 +29,7 @@ elif [ $RK_ARCH == arm ];then
 	export TOOLCHAIN=arm-linux-gnueabihf
 fi
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
-export ARCH="RK_ARCH"
+export ARCH=$RK_ARCH
 export CROSS_COMPILE="$TOOLCHAIN_DIR/bin/$TOOLCHAIN-"
 export AR="$TOOLCHAIN_DIR/bin/$TOOLCHAIN-ar"
 export AS="$TOOLCHAIN_DIR/bin/$TOOLCHAIN-as"
