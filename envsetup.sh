@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DISTRO_DIR=$(dirname $(realpath "$0"))
+export DISTRO_DIR=$(cd "$(dirname "$0")"; pwd)
 export TOP_DIR=$(realpath $DISTRO_DIR/..)
 export OUTPUT_DIR=$DISTRO_DIR/output
 export TARGET_DIR=$OUTPUT_DIR/target
@@ -23,7 +23,9 @@ if [ $RK_ARCH == arm64 ];then
 	export TOOLCHAIN_DIR=$TOP_DIR/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
 	export TOOLCHAIN=aarch64-linux-gnu
 elif [ $RK_ARCH == arm ];then
-	export TOOLCHAIN_DIR=$TOP_DIR/prebuilts/gcc/linux-x86/arm/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf
+	#export TOOLCHAIN_DIR=$TOP_DIR/prebuilts/gcc/linux-x86/arm/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf
+	#export TOOLCHAIN=arm-linux-gnueabihf
+	export TOOLCHAIN_DIR=$TOP_DIR/out/sun8iw11p1/linux/common/buildroot/host/opt/ext-toolchain/bin
 	export TOOLCHAIN=arm-linux-gnueabihf
 fi
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"

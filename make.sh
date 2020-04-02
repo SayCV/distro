@@ -1,10 +1,15 @@
 #!/bin/bash
 
 set -e
-DISTRO_DIR=$(dirname $(realpath "$0"))
+DISTRO_DIR=$(cd "$(dirname "$0")"; pwd)
 TOP_DIR=$DISTRO_DIR/..
 
-source $TOP_DIR/device/rockchip/.BoardConfig.mk
+# source $TOP_DIR/device/sunxi/.BoardConfig.mk
+# Target arch
+export RK_ARCH=arm
+# Set rootfs type, including ext2 ext4 squashfs
+export RK_ROOTFS_TYPE=ext4
+
 source $DISTRO_DIR/envsetup.sh
 source $OUTPUT_DIR/.config
 DISTRO_CONFIG=$OUTPUT_DIR/.config
@@ -13,7 +18,7 @@ ROOTFS_DEBUG_SQUASHFS=$IMAGE_DIR/rootfs.debug.squashfs
 ROOTFS_EXT4=$IMAGE_DIR/rootfs.ext4
 ROOTFS_SQUASHFS=$IMAGE_DIR/rootfs.squashfs
 BUILD_PACKAGE=$1
-export SUITE=buster
+export SUITE=xenial
 export ARCH=$RK_ARCH
 
 OS=`$SCRIPTS_DIR/get_distro.sh $SUITE`
