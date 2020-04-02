@@ -2,7 +2,7 @@
 
 DEFCONFIG=$1
 OUTPUT=$2
-INC_DIR=$(dirname $DEFCONFIG)/rockchip
+INC_DIR=$(dirname $DEFCONFIG)/sunxi
 
 cat /dev/null > $OUTPUT
 
