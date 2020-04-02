@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-CMD=`realpath $0`
-SCRIPT_DIR=`dirname $CMD`
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 dl_dir=$(realpath $SCRIPT_DIR/../download)
 
 echo "top:$TOP_DIR"
