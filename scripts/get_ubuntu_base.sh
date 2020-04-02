@@ -10,6 +10,8 @@ if [ "$#" -ne 3 ]; then
     exit 1
 fi
 
+source $SCRIPTS_DIR/get_mirror.sh
+
 arch=$1
 suite=$2
 dir=$3
@@ -46,7 +48,16 @@ else
 fi
 
 fakeroot cp /usr/bin/${qemu} ${dir}/usr/bin/
-fakeroot sed -i 's%^# deb %deb %' ${dir}/etc/apt/sources.list
+#fakeroot sed -i 's%^# deb %deb %' ${dir}/etc/apt/sources.list
+# overwrite apt source list
+fakeroot rm -f ${dir}/etc/apt/sources.list
+fakeroot echo deb     ${DEFAULT_UBUNTU_MIRROR} ${suite}          main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+fakeroot echo deb-src ${DEFAULT_UBUNTU_MIRROR} ${suite}          main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+fakeroot echo deb     ${DEFAULT_UBUNTU_MIRROR} ${suite}-updates  main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+fakeroot echo deb-src ${DEFAULT_UBUNTU_MIRROR} ${suite}-updates  main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+fakeroot echo deb     ${DEFAULT_UBUNTU_MIRROR} ${suite}-security main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+fakeroot echo deb-src ${DEFAULT_UBUNTU_MIRROR} ${suite}-security main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+
 fakeroot cp /etc/resolv.conf ${dir}/etc/resolv.conf
 
 
