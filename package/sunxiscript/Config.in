@@ -1,0 +1,5 @@
+config BR2_PACKAGE_SUNXISCRIPT
+	bool "sunxiscript"
+	default y
+	help
+	  Script used for partition init, usb device and other test script.
