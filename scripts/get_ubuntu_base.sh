@@ -50,13 +50,7 @@ fi
 fakeroot cp /usr/bin/${qemu} ${dir}/usr/bin/
 #fakeroot sed -i 's%^# deb %deb %' ${dir}/etc/apt/sources.list
 # overwrite apt source list
-fakeroot rm -f ${dir}/etc/apt/sources.list
-fakeroot echo deb     ${DEFAULT_UBUNTU_MIRROR} ${suite}          main restricted universe multiverse >> ${dir}/etc/apt/sources.list
-fakeroot echo deb-src ${DEFAULT_UBUNTU_MIRROR} ${suite}          main restricted universe multiverse >> ${dir}/etc/apt/sources.list
-fakeroot echo deb     ${DEFAULT_UBUNTU_MIRROR} ${suite}-updates  main restricted universe multiverse >> ${dir}/etc/apt/sources.list
-fakeroot echo deb-src ${DEFAULT_UBUNTU_MIRROR} ${suite}-updates  main restricted universe multiverse >> ${dir}/etc/apt/sources.list
-fakeroot echo deb     ${DEFAULT_UBUNTU_MIRROR} ${suite}-security main restricted universe multiverse >> ${dir}/etc/apt/sources.list
-fakeroot echo deb-src ${DEFAULT_UBUNTU_MIRROR} ${suite}-security main restricted universe multiverse >> ${dir}/etc/apt/sources.list
+fakeroot cp -rf $TOP_DIR/distro/overlay/etc/apt/sources.${version_major}.list ${dir}/etc/apt/sources.list
 
 fakeroot cp /etc/resolv.conf ${dir}/etc/resolv.conf
 
