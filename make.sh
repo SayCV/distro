@@ -115,6 +115,14 @@ install_deb_dependies()
 	$SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE "$install_pkgs"
 }
 
+install_lib_moudles()
+{
+	local KERNEL_VERSION="3.10.65"
+	fakeroot mkdir -p $DISTRO_DIR/output/target/lib/modules/
+	fakeroot cp -rf $TOP_DIR/linux-3.10/output/lib/modules/${KERNEL_VERSION} $DISTRO_DIR/output/target/lib/modules/
+	fakeroot cp -rf $TOP_DIR/libdaq19/install/lib/modules/*.ko $DISTRO_DIR/output/target/lib/modules/${KERNEL_VERSION}/
+}
+
 init()
 {
 	mkdir -p $OUTPUT_DIR $BUILD_DIR $TARGET_DIR $IMAGE_DIR $MOUNT_DIR $SYSROOT_DIR $CACHE_DIR
@@ -138,6 +146,7 @@ build_all()
 	build_base
 #	install_deb_dependies
 	build_packages
+	install_lib_moudles
 	$SCRIPTS_DIR/override_deb.sh
 	run rsync -a --ignore-times --keep-dirlinks --chmod=u=rwX,go=rX --exclude .empty $OVERLAY_DIR/ $TARGET_DIR/
 	pack

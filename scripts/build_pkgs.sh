@@ -29,7 +29,7 @@ else
 			fi
 		fi
 
-        	if [ -x $PACKAGE_DIR/$p/make.sh ];then
+        if [ -x $PACKAGE_DIR/$p/make.sh ];then
 			mkdir -p $BUILD_DIR/$p
                 	run $PACKAGE_DIR/$p/make.sh
 			touch $BUILD_DIR/$p/.timestamp

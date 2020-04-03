@@ -38,10 +38,10 @@ if [ x$INIT == xinit ];then
 	fi
 fi
 
-run proot -q $QEMU -v -1 -0 -b /dev -b /sys -b /proc -r output/target/ apt-get install -y $PKG
-#run $SCRIPTS_DIR/chmount.sh -m $TARGET_DIR
-#run sudo chroot $TARGET_DIR apt-get install -y $PKG
-#run $SCRIPTS_DIR/chmount.sh -u $TARGET_DIR
+#  run proot -q $QEMU -v -1 -0 -b /dev -b /sys -b /proc -r output/target/ apt-get install $PKG -y
+run $SCRIPTS_DIR/chmount.sh -m $TARGET_DIR
+run sudo chroot $TARGET_DIR apt-get install -y $PKG
+run $SCRIPTS_DIR/chmount.sh -u $TARGET_DIR
 
 $SCRIPTS_DIR/fix_link.sh $TARGET_DIR/usr/lib/$TOOLCHAIN
 
