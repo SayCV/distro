@@ -14,6 +14,7 @@ export DOWNLOAD_DIR=$DISTRO_DIR/download
 export CACHE_DIR=$DISTRO_DIR/cache
 export SCRIPTS_DIR=$DISTRO_DIR/scripts
 export OVERLAY_DIR=$DISTRO_DIR/overlay
+export OVERLAY_DIR2=$TOP_DIR/ubuntu-fs-overlay
 export MOUNT_DIR=$TARGET_DIR/sdk
 export BUILDROOT_DIR=$TOP_DIR/buildroot
 export BUILDROOT_PKG_DIR=$BUILDROOT_DIR/package
