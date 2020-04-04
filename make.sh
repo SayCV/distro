@@ -65,7 +65,8 @@ pack_ext4()
 	if [ $SIZE -lt $[3*1024*1024] ];then
 		SIZE=$[3*1024*1024]
 	fi
-	run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
+	# run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
+	run genext2fs -U -b $SIZE -d $SRC $DST
 	run tune2fs -O dir_index,filetype $DST
 	run e2fsck -fy $DST $> /dev/null || e2fsck $DST
 #	if [ -x $DISTRO_DIR/../device/rockchip/common/mke2img.sh ];then
