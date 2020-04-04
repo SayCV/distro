@@ -58,6 +58,7 @@ pack_ext4()
 	SRC=$1
 	DST=$2
 	SIZE=`du -sk --apparent-size $SRC | cut --fields=1`
+	inode_ratio=4096
 	inode_counti=`find $SRC | wc -l`
 	inode_counti=$[inode_counti+512]
 	EXTRA_SIZE=$[inode_counti*4]
@@ -65,8 +66,8 @@ pack_ext4()
 	if [ $SIZE -lt $[3*1024*1024] ];then
 		SIZE=$[3*1024*1024]
 	fi
-	# run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
-	run genext2fs -U -b $SIZE -d $SRC $DST
+	inode_counti=$[3*1024*1024*1024/inode_ratio]
+	run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
 	run tune2fs -O dir_index,filetype $DST
 	run e2fsck -fy $DST $> /dev/null || e2fsck $DST
 #	if [ -x $DISTRO_DIR/../device/rockchip/common/mke2img.sh ];then
