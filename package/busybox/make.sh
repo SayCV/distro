@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-DEPENDENCIES="coreutils udev"
+DEPENDENCIES=udev
 $SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE $DEPENDENCIES
 PKG=busybox
 VERSION=1.27.2
@@ -23,7 +23,7 @@ rm -f $TARGET_DIR/bin/mountpoint
 cd $BUILD_DIR/$PKG
 make oldconfig
 /bin/sed -i -e 's/^noclobber="0"$/noclobber="1"/' $BUILD_DIR/$PKG/applets/install.sh
-make -j$RK_JOBS
+make
 make CONFIG_PREFIX="$TARGET_DIR" install
 cd -
 
@@ -48,5 +48,4 @@ install -D -m 0755 $PACKAGE_DIR/busybox/S20urandom $TARGET_DIR/etc/init.d/
 if [ -e $TARGET_DIR/etc/init.d/udev ];then
 	mv $TARGET_DIR/etc/init.d/udev $TARGET_DIR/etc/init.d/S10udev
 fi
-rm $TARGET_DIR/usr/bin/readlink
 

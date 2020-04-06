@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-DEPENDENCIES="gst-plugins-base"
+DEPENDENCIES=gst-plugins-base
 PKG=gst-plugins-bad
 VERSION=1.14.4
 source $OUTPUT_DIR/.config
@@ -15,7 +15,7 @@ if [ ! -d $BUILD_DIR/$PKG/$PKG-$VERSION ];then
 fi
 
 cd $BUILD_DIR/$PKG
-OPTS="--target=aarch64-linux-gnu --host=aarch64-linux-gnu --prefix=/usr --libdir=/usr/lib/$TOOLCHAIN --program-prefix= --disable-gtk-doc --disable-gtk-doc-html --disable-dependency-tracking --disable-nls --disable-static --enable-shared  --disable-examples --disable-valgrind"
+OPTS="--target=aarch64-linux-gnu --host=aarch64-linux-gnu --prefix=/usr --libdir=/usr/lib/$TOOLCHAIN --disable-gtk-doc --disable-gtk-doc-html --disable-dependency-tracking --disable-nls --disable-static --enable-shared  --disable-examples --disable-valgrind"
 
 if [ x$BR2_PACKAGE_GST_PLUGINS_BAD_IPA = xy ];then
 	OPTS="$OPTS --enable-iqa"
@@ -668,7 +668,6 @@ fi
 
 if [ x$BR2_PACKAGE_GST_PLUGINS_BAD_KMS = xy ];then
 	OPTS="$OPTS --enable-kms"
-	DEPENDENCIES="$DEPENDENCIES libdrm"
 else
 	OPTS="$OPTS --disable-kms"
 fi
@@ -938,15 +937,8 @@ else
 fi
 $SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE "$DEPENDENCIES"
 echo "opts: $OPTS"
-if [ -d $DISTRO_DIR/package/$PKG/$VERSION ]; then
-	for p in $(ls $DISTRO_DIR/package/$PKG/$VERSION/*.patch); do
-		echo "apply patch: "$p
-		patch -p1 < $p;
-	done
-fi
-autoreconf -i
 ./configure $OPTS
-make -j$RK_JOBS
+make
 make install
 $SCRIPTS_DIR/fixlibtool.sh $TARGET_DIR $TARGET_DIR
 cd -

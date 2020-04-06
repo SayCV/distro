@@ -13,7 +13,7 @@ ROOTFS_DEBUG_SQUASHFS=$IMAGE_DIR/rootfs.debug.squashfs
 ROOTFS_EXT4=$IMAGE_DIR/rootfs.ext4
 ROOTFS_SQUASHFS=$IMAGE_DIR/rootfs.squashfs
 BUILD_PACKAGE=$1
-export SUITE=buster
+export SUITE=xenial
 export ARCH=$RK_ARCH
 
 OS=`$SCRIPTS_DIR/get_distro.sh $SUITE`
@@ -57,17 +57,79 @@ pack_ext4()
 	inode_counti=$[inode_counti+512]
 	EXTRA_SIZE=$[inode_counti*4]
 	SIZE=$[SIZE+EXTRA_SIZE]
-	run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
+	run genext2fs -b $SIZE -N $inode_counti -d $SRC $DST
+	run e2fsck -fy $DST
 	run tune2fs -O dir_index,filetype $DST
-	run e2fsck -fy $DST $> /dev/null || e2fsck $DST
 #	if [ -x $DISTRO_DIR/../device/rockchip/common/mke2img.sh ];then
 #		$DISTRO_DIR/../device/rockchip/common/mke2img.sh $SRC $DST
 #	fi
 }
 
+target_clean()
+{
+	system=$1
+	for pkg in $(cat $DISTRO_DIR/configs/build.config)
+	do
+		if [ x$pkg != x`grep $pkg $DISTRO_CONFIG` ];then
+			sudo chroot $system apt-get remove -y $pkg
+		fi
+	done
+
+	sudo chroot $system apt-get autoclean -y
+	sudo chroot $system apt-get clean -y
+	sudo chroot $system apt-get autoremove -y
+	sudo rm -rf $system/usr/share/locale/*
+	sudo rm -rf $system/usr/share/man/*
+	sudo rm -rf $system/usr/share/doc/*
+	sudo rm -rf $system/usr/include/*
+	sudo rm -rf $system/var/log/*
+	sudo rm -rf $system/var/lib/apt/lists/*
+	sudo rm -rf $system/var/cache/*
+	echo "remove unused dri..."
+	if [ $DISTRO_ARCH = arm64 ];then
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/msm_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/nouveau_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/nouveau_drv_video.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/nouveau_vieux_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/r200_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/r300_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/r600_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/r600_drv_video.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/radeon_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/radeonsi_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/radeonsi_drv_video.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/tegra_dri.so
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/dri/vc4_dri.so
+	elif [ $DISTRO_ARCH = arm ];then
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/msm_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/nouveau_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/nouveau_drv_video.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/nouveau_vieux_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/r200_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/r300_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/r600_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/r600_drv_video.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/radeon_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/radeonsi_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/radeonsi_drv_video.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/tegra_dri.so
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/dri/vc4_dri.so
+	fi
+	echo "remove vdpau..."
+	if [ $DISTRO_ARCH = arm64 ];then
+		sudo rm -rf $system/usr/lib/aarch64-linux-gnu/vdpau
+	elif [ $DISTRO_ARCH = arm ];then
+		sudo rm -rf $system/usr/lib/arm-linux-gnueabihf/vdpau
+	fi
+	sudo rm -rf $system/sdk
+}
+
 pack()
 {
 	echo "packing rootfs image..."
+#	rm -rf $ROOTFS_DIR
+#	cp -ar $TARGET_DIR $ROOTFS_DIR
+#	target_clean $ROOTFS_DIR
 	if [ $RK_ROOTFS_TYPE = ext4 ];then
 		pack_ext4 $TARGET_DIR $ROOTFS_EXT4
 	elif [ $RK_ROOTFS_TYPE = squashfs ];then
@@ -87,33 +149,9 @@ build_packages()
 	echo "finish building all packages"
 }
 
-install_deb_dependies()
-{
-	local install_pkgs
-
-	for p in $(ls $DISTRO_DIR/package/); do
-		[ -f $DISTRO_DIR/package/$p/make.sh ] || continue
-		dependencies=`grep DEPENDENCIES= $DISTRO_DIR/package/$p/make.sh| head -1 | cut -d '=' -f 2 | tr -d '"'`
-		install_pkgs+=' '$dependencies
-	done
-
-	for p in $(ls $DISTRO_DIR/package/); do
-		[ -f $DISTRO_DIR/package/$p/make.sh ] || continue
-
-		# ${str/substr/} can't handle this scenario:
-		# pkg: gstreamer gstreamer-rockchip
-		# without -->p=' '$p' ', the output will be -rockchip.
-		p=' '$p' '
-		install_pkgs=${install_pkgs//$p/' '}
-	done
-	echo "dependencies package are:"$install_pkgs
-	$SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE "$install_pkgs"
-}
-
 init()
 {
-	mkdir -p $OUTPUT_DIR $BUILD_DIR $TARGET_DIR $IMAGE_DIR $MOUNT_DIR $SYSROOT_DIR $CACHE_DIR
-	mkdir -p $TARGET_DIR/etc/apt/sources.list.d $TARGET_DIR/var/cache/apt/archives
+	mkdir -p $OUTPUT_DIR $BUILD_DIR $TARGET_DIR $IMAGE_DIR $MOUNT_DIR $SYSROOT_DIR $TARGET_DIR/etc/apt/sources.list.d
 
 	if [ -z $ARCH ];then
 		export ARCH=arm64
@@ -131,7 +169,6 @@ build_all()
 {
 	init $1
 	build_base
-#	install_deb_dependies
 	build_packages
 	$SCRIPTS_DIR/override_deb.sh
 	run rsync -a --ignore-times --keep-dirlinks --chmod=u=rwX,go=rX --exclude .empty $OVERLAY_DIR/ $TARGET_DIR/
@@ -148,11 +185,8 @@ main()
 		init
 		build_base
 		exit 0
-	elif [ x$1 == xmirror ] && [ -n $2 ];then
-		echo $2 > $OUTPUT_DIR/.mirror
-		exit 0
-	elif [ -z $1 ];then
-		build_all
+	elif [ -z $1 ] || [ x$1 == xdefault ];then
+		build_all $1
 		exit 0
 	else
 		init

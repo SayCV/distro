@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-DEPENDENCIES="libglib2.0-dev libgstreamer1.0-0"
+DEPENDENCIES=libglib2.0-dev
 $SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE "$DEPENDENCIES"
 PKG=gstreamer
 VERSION=1.14.4
@@ -15,7 +15,17 @@ if [ ! -d $BUILD_DIR/$PKG/$PKG-$VERSION ];then
 fi
 
 cd $BUILD_DIR/$PKG
-./configure --target=aarch64-linux-gnu --host=aarch64-linux-gnu --prefix=/usr --libdir=/usr/lib/$TOOLCHAIN --program-prefix= --disable-gtk-doc --disable-gtk-doc-html --disable-dependency-tracking --disable-nls --disable-static --enable-shared  --disable-examples --disable-tests --disable-failing-tests --disable-valgrind --disable-benchmarks --disable-introspection --disable-check
-make -j$RK_JOBS
+./configure --target=aarch64-linux-gnu --host=aarch64-linux-gnu --prefix=/usr --libdir=/usr/lib/$TOOLCHAIN --disable-gtk-doc --disable-gtk-doc-html --disable-dependency-tracking --disable-nls --disable-static --enable-shared  --disable-examples --disable-tests --disable-failing-tests --disable-valgrind --disable-benchmarks --disable-introspection --disable-check
+make
 make install
 $SCRIPTS_DIR/fixlibtool.sh $TARGET_DIR $TARGET_DIR
+cd -
+cd $TARGET_DIR/usr/bin
+ln -sf $TOOLCHAIN-gst-device-monitor-1.0 gst-device-monitor-1.0
+ln -sf $TOOLCHAIN-gst-discoverer-1.0 gst-discoverer-1.0
+ln -sf $TOOLCHAIN-gst-inspect-1.0 gst-inspect-1.0
+ln -sf $TOOLCHAIN-gst-launch-1.0 gst-launch-1.0
+ln -sf $TOOLCHAIN-gst-play-1.0 gst-play-1.0
+ln -sf $TOOLCHAIN-gst-stats-1.0 gst-stats-1.0
+ln -sf $TOOLCHAIN-gst-typefind-1.0 gst-typefind-1.0
+cd -

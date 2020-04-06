@@ -15,11 +15,11 @@ if [ ! -d $BUILD_DIR/$PKG/$PKG-$VERSION ];then
 fi
 
 cd $BUILD_DIR/$PKG
-OPTS="--target=aarch64-linux-gnu --host=aarch64-linux-gnu --prefix=/usr --libdir=/usr/lib/$TOOLCHAIN --program-prefix= --disable-gtk-doc --disable-gtk-doc-html --disable-dependency-tracking --disable-nls --disable-static --enable-shared  --disable-valgrind --disable-examples"
+OPTS="--target=aarch64-linux-gnu --host=aarch64-linux-gnu --prefix=/usr --libdir=/usr/lib/$TOOLCHAIN --disable-gtk-doc --disable-gtk-doc-html --disable-dependency-tracking --disable-nls --disable-static --enable-shared  --disable-valgrind --disable-examples"
 
 
 if [ x$BR2_PACKAGE_GST_PLUGINS_GOOD_ALPHA = xy ];then
-	OPTS="$OPTS --enable-alpha"
+	OPTS="$OPTS --ebable-alpha"
 else
 	OPTS="$OPTS --disable-alpha"
 fi
@@ -482,14 +482,8 @@ else
 fi
 $SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE "$DEPENDENCIES"
 echo "opts: $OPTS"
-if [ -d $DISTRO_DIR/package/$PKG/$VERSION ]; then
-	for p in $(ls $DISTRO_DIR/package/$PKG/$VERSION/*.patch); do
-		echo "apply patch: "$p
-		patch -p1 < $p;
-	done
-fi
 ./configure $OPTS
-make -j$RK_JOBS
+make
 make install
 $SCRIPTS_DIR/fixlibtool.sh $TARGET_DIR $TARGET_DIR
 cd -

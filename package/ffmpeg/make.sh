@@ -859,7 +859,7 @@ fi
 $SCRIPTS_DIR/build_pkgs.sh $ARCH $SUITE "$DEPENDENCIES"
 echo $OPTS
 $TOP_DIR/external/ffmpeg/configure $OPTS
-make -j$RK_JOBS
+make
 make install
 
 cd -
