@@ -1,4 +1,0 @@
-config BR2_PACKAGE_QFM
-	bool "qfm app"
-	help
-	  "qfm app based on QT5"

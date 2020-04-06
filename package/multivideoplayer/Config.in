@@ -1,6 +1,0 @@
-config BR2_PACKAGE_MULTIVIDEOPLAYER
-	bool "multivideo player app"
-	depends on BR2_PACKAGE_GSTREAMER_ROCKCHIP
-	help
-	  "multivideo player app based on QT5"
-

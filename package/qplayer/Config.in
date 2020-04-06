@@ -1,6 +1,0 @@
-config BR2_PACKAGE_QPLAYER
-	bool "video app"
-	depends on BR2_PACKAGE_GSTREAMER_ROCKCHIP
-	help
-	  "video app based on QT5"
-

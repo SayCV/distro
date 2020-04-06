@@ -32,7 +32,6 @@ url=http://cdimage.ubuntu.com/ubuntu-base/releases/${version_major}/release/${na
 
 if [ ! -e ${dl_dir}/${name} ];then 
 	wget -P ${dl_dir} -c ${url}
-	fakeroot tar -xf ${dl_dir}/${name} -C ${dir}/
 else
 	fakeroot tar -xf ${dl_dir}/${name} -C ${dir}/
 fi

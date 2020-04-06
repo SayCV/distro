@@ -13,7 +13,7 @@ ROOTFS_DEBUG_SQUASHFS=$IMAGE_DIR/rootfs.debug.squashfs
 ROOTFS_EXT4=$IMAGE_DIR/rootfs.ext4
 ROOTFS_SQUASHFS=$IMAGE_DIR/rootfs.squashfs
 BUILD_PACKAGE=$1
-export SUITE=xenial
+export SUITE=buster
 export ARCH=$RK_ARCH
 
 OS=`$SCRIPTS_DIR/get_distro.sh $SUITE`
