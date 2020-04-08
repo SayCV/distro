@@ -13,7 +13,7 @@ ROOTFS_DEBUG_SQUASHFS=$IMAGE_DIR/rootfs.debug.squashfs
 ROOTFS_EXT4=$IMAGE_DIR/rootfs.ext4
 ROOTFS_SQUASHFS=$IMAGE_DIR/rootfs.squashfs
 BUILD_PACKAGE=$1
-export SUITE=xenial
+export SUITE=bionic
 export ARCH=$RK_ARCH
 
 OS=`$SCRIPTS_DIR/get_distro.sh $SUITE`
@@ -53,18 +53,13 @@ pack_ext4()
 	SRC=$1
 	DST=$2
 	SIZE=`du -sk --apparent-size $SRC | cut --fields=1`
-	inode_ratio=4096
 	inode_counti=`find $SRC | wc -l`
 	inode_counti=$[inode_counti+512]
 	EXTRA_SIZE=$[inode_counti*4]
 	SIZE=$[SIZE+EXTRA_SIZE]
-	if [ $SIZE -lt $[4*1024*1024] ];then
-		SIZE=$[4*1024*1024]
-	fi
-	inode_counti=$[4*1024*1024*1024/inode_ratio]
-	run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
+	run genext2fs -b $SIZE -N $inode_counti -d $SRC $DST
+	run e2fsck -fy $DST
 	run tune2fs -O dir_index,filetype $DST
-	run e2fsck -fy $DST $> /dev/null || e2fsck $DST
 #	if [ -x $DISTRO_DIR/../device/rockchip/common/mke2img.sh ];then
 #		$DISTRO_DIR/../device/rockchip/common/mke2img.sh $SRC $DST
 #	fi

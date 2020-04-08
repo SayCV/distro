@@ -1,6 +1,1 @@
 libc6-dev
-lockfile-progs
-git
-build-essential
-telnet
-openssh-server
