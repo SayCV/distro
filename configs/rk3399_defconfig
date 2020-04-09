@@ -7,6 +7,6 @@
 #include "ff_audio.config"
 #include "gst_audio.config"
 #include "gst_video.config"
-#include "wifi.config"
+# include "wifi.config"
 #include "debug.install"
 #include "qtapp.config"
