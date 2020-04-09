@@ -63,10 +63,10 @@ pack_ext4()
 	inode_counti=$[inode_counti+512]
 	EXTRA_SIZE=$[inode_counti*4]
 	SIZE=$[SIZE+EXTRA_SIZE]
-	if [ $SIZE -lt $[3*1024*1024] ];then
-		SIZE=$[3*1024*1024]
+	if [ $SIZE -lt $[4*1024*1024] ];then
+		SIZE=$[4*1024*1024]
 	fi
-	inode_counti=$[3*1024*1024*1024/inode_ratio]
+	inode_counti=$[4*1024*1024*1024/inode_ratio]
 	run genext2fs -U -b $SIZE -N $inode_counti -d $SRC $DST
 	run tune2fs -O dir_index,filetype $DST
 	run e2fsck -fy $DST $> /dev/null || e2fsck $DST
